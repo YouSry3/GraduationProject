@@ -1,4 +1,5 @@
 ﻿using GraduationProject.Persistence;
+using GraduationProject.Services.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -12,26 +13,14 @@ namespace GraduationProject
         {
             // DbContext
             services.AddDbContext<AppDbContext>(options =>
-                // Use SQL Server                                    ============= Path Connection in appSettings.json file ==============
+                // Use Your Name Server OF (SQL Server)              ============= Path Connection in appSettings.json file ============
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-            var AllowsOrigin = configuration.GetSection("AllowedOrigin").Get<string[]>();
-
-            services.AddCors(options =>
-                   options.AddPolicy("AllowAll", builder =>
-                   builder
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()
-                   .WithOrigins(AllowsOrigin!)
-                   ));
-
-            //Custom Allow Origin for specific client
-            //.WithOrigins("http://localhost:5173")
-
 
             // Controllers + FluentValidation
             services.AddControllers();
 
+            // Add Application Services
+            services.AddServices();
 
 
             // Swagger
@@ -40,8 +29,14 @@ namespace GraduationProject
 
             return services;
         }
+        private static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IAuthService, AuthService>();
 
-       
-       
+            return services;
+        }
+
+
+
     }
 }
